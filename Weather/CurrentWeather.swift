@@ -14,6 +14,7 @@ struct CurrentWeather{
     var icon = ""
     var temp = 0.0
     var app_temp = 0.0
+    var date = ""
     
     init(){
     }
@@ -27,6 +28,9 @@ struct CurrentWeather{
         }
         if let item = json["app_temp"].double {
             app_temp = item
+        }
+        if let item = json["valid_date"].string{
+            date = item
         }
         if let weather = json["weather"].dictionary{
             if let item = weather["description"]?.string {

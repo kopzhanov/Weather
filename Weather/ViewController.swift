@@ -19,6 +19,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
     @IBOutlet weak var tempLabel: UILabel!
     @IBOutlet weak var feelsLikeLabel: UILabel!
     var currentWeather = CurrentWeather()
+    var forecast : [CurrentWeather] = []
     
     let API_KEY = "baceb4bde52e4b248ae7ea2a47c9b67e"
     
@@ -41,9 +42,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
             SVProgressHUD.dismiss()
             
             if response.response?.statusCode == 200 {
-                print(200)
                 let json = JSON(response.value!)
-                print(json)
                 if let data = json["data"].array {
                     self.currentWeather = CurrentWeather(json: data[0])
                     self.updateInfo()
@@ -51,6 +50,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
             }
         }
     }
+    
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         getCurrent(city: searchBar.text!)
@@ -63,6 +63,42 @@ class ViewController: UIViewController, UISearchBarDelegate {
         tempLabel.text = "Temperature: \(currentWeather.temp)°C"
         feelsLikeLabel.text = "Feels Like: \(currentWeather.app_temp)°C"
     }
+    
     @IBAction func showWeeklyForecast(_ sender: Any) {
+        let vc = storyboard?.instantiateViewController(withIdentifier: "tableViewController") as! TableViewController
+        vc.forecast = self.forecast
+        vc.city = currentWeather.city
+        navigationController?.show(vc, sender: self)
     }
 }
+
+/*
+ 
+ getForecast()
+ for day in self.forecast{
+     print (day)
+ }
+ 
+ func getForecast(){
+     let parameters = ["key":API_KEY, "city" : currentWeather.city, "days":7] as [String:Any]
+     
+     SVProgressHUD.show()
+     
+     AF.request("https://api.weatherbit.io/v2.0/forecast/daily?", method: .get, parameters: parameters).responseJSON { response in
+         SVProgressHUD.dismiss()
+         
+         if response.response?.statusCode == 200 {
+             let json = JSON(response.value!)
+             print("forecast")
+             //print(json)
+             if let data = json["data"].array{
+                 print(data)
+                         for day in data{
+                             let weather = CurrentWeather(json: day)
+                             self.forecast.append(weather)
+                         }
+                     }
+                 }
+             }
+         }
+ */
